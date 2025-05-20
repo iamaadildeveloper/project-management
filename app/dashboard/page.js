@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getProjects } from '../lib/projects';
-import { getEmployees } from '../lib/employees';
-import { getRevenue } from '../lib/revenue';  
+import { getEmployees } from '../lib/employees'; 
 import {
     CheckCircleIcon,
     ClockIcon,
@@ -24,9 +23,7 @@ export default function DashboardPage() {
     const [error, setError] = useState(null);
     const [loadingEmployees, setLoadingEmployees] = useState(true); // New loading state for employees
     const [errorEmployees, setErrorEmployees] = useState(null); // New error state for employees
-    const [loadingRevenue, setLoadingRevenue] = useState(true); // New loading state
-    const [errorRevenue, setErrorRevenue] = useState(null);
-    // Async function to load projects and update stats
+
     const updateStats = async () => {
         try {
             setLoading(true);

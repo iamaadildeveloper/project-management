@@ -24,9 +24,13 @@ export async function POST(request) {
     projects.push(newProject);
     return NextResponse.json({ success: true, project: newProject });
   } catch (error) {
-    return NextResponse.json(
-      { success: false, error: 'Failed to save project' },
-      { status: 500 }
-    );
-  }
+  console.error("Error:", error);  // Log the error for debugging
+  return NextResponse.json(
+    { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Failed to save project" 
+    },
+    { status: 500 }
+  );
+}
 }

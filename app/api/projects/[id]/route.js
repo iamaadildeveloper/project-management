@@ -43,10 +43,13 @@ export async function PATCH(request, { params }) {
     );
     
   } catch (error) {
-    console.error('API Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to update project' },
-      { status: 500 }
-    );
-  }
+  console.error('Error saving project:', error); // Log the error
+  return NextResponse.json(
+    { 
+      success: false, 
+      error: error.message || 'Failed to save project' // Use the error
+    },
+    { status: 500 }
+  );
+}
 }

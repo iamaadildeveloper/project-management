@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { UserIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
-import { fromJSON } from 'postcss';
+import Image from 'next/image';
 
 export default function UserMenu() {
   const { user, loading, googleLogin, logout } = useAuth();
@@ -18,7 +18,7 @@ export default function UserMenu() {
           <Menu.Button className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
               {user.photoURL ? (
-                <img 
+                <Image 
                   src={user.photoURL} 
                   alt="User" 
                   className="h-8 w-8 rounded-full" 

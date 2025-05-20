@@ -2,9 +2,6 @@ import { db, auth } from './firebase';
 import {
   collection,
   getDocs,
-  doc,
-  getDoc,
-  onSnapshot,
 } from 'firebase/firestore';
 
 /**
