@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/page.js", "app/layout.js", "app/signup/page.js", "app/projects/types/project.js", "app/projects/add/page.js", "app/projects/page.js", "app/login/page.js", "app/login/LoginModal.js", "app/lib/projectService.js", "app/lib/projects.js", "app/lib/projects-hybrid.js", "app/lib/migrateData.js", "app/lib/migrate-projects.js", "app/lib/firebase.js", "app/layout/SidebarItem.js", "app/dashboard/page.js", "app/context/AuthContext.js", "app/components/UserMenu.js", "app/components/ProtectedRoute.js", "app/components/Navbar.js", "app/api/projects/route.js", "app/api/projects/[id]/route.js"],
   "exclude": ["node_modules"]
 }

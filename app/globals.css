@@ -1,26 +1,93 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Sidebar.module.css */
+.sidebarItem {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  color: #4b5563;
+  text-decoration: none;
+  width: 100%;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Active State (current page) */
+.sidebarItem.active {
+  background-color: #eef2ff;
+  color: #4f46e5;
+  font-weight: 500; /* Slightly bolder text for active item */
+}
+
+.sidebarItem:hover {
+  background-color: #eef2ff;
+  color: #4f46e5;
+}
+
+.sidebarIcon {
+  margin-right: 0.75rem;
+}
+
+.sidebarItem:hover .sidebarIcon {
+  color: #4f46e5;
+}
+
+aside {
+  background-color: white;
+  box-sizing: border-box;
+}
+
+main {
+  margin-left: 0; /* Reset default margin */
+  width: calc(100% - var(--sidebar-width)); /* Dynamic width */
+}
+
+@media (max-width: 767px) {
+  aside {
+    left: 0;
+    top: 0;
+    bottom: 0;
+  }
+  
+  main {
+    margin-left: 0;
+    width: 100%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+/* globals.css */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
 }
