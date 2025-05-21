@@ -130,11 +130,11 @@ export default function LoginPage() {
                 </button>
 
                 <p className="mt-8 text-center text-gray-600">
-                    Don't have an account?{' '}
-                    <a href="/signup" className="text-indigo-600 hover:text-indigo-800 font-semibold hover:underline transition duration-200">
-                        Sign up here
-                    </a>
-                </p>
+    Don&apos;t have an account?{' '} {/* Changed here */}
+    <a href="/signup" className="text-indigo-600 hover:text-indigo-800 font-semibold hover:underline transition duration-200">
+        Sign up here
+    </a>
+</p>
             </div>
         </div>
     );
