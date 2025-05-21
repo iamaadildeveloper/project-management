@@ -75,7 +75,7 @@ export default function DashboardPage() {
 
     return (
         <div className="p-6">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Freelance Management</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-6">Dashboard Overview</h1>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"> {/* Adjusted grid columns */}
                 {/* Total Projects Card */}

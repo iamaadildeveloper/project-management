@@ -9,13 +9,12 @@ import {
   signOut,
   createUserWithEmailAndPassword
 } from 'firebase/auth';
-// IMPORTANT: We import auth and googleProvider from your existing firebase setup
 import { auth, googleProvider } from '../lib/firebase'; // Adjust path if needed
 
 const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
-  // Renamed 'user' to 'currentUser' for clarity and consistency with LoginPage
+  // RENAMED: 'user' to 'currentUser' for consistency with components consuming it
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [migrationStatus, setMigrationStatus] = useState({
@@ -24,20 +23,13 @@ export function AuthProvider({ children }) {
   });
 
   useEffect(() => {
-    // This listener observes authentication state changes from Firebase
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      // --- ADDED FOR DEBUGGING ---
-      console.log('onAuthStateChanged: User object received:', user);
-      // --- END DEBUGGING ---
-
-      // Update the currentUser state whenever the auth state changes
+      // Set the currentUser state to the user object received from Firebase
       setCurrentUser(user);
       setLoading(false);
 
-      // Only attempt migration if a user is logged in
       if (user) {
         try {
-          // Dynamically import migrateData to avoid server-side issues if it uses localStorage
           const { migrateLocalData } = await import('../lib/migrateData');
           const result = await migrateLocalData();
           setMigrationStatus(result);
@@ -46,18 +38,14 @@ export function AuthProvider({ children }) {
           setMigrationStatus({ success: false, count: 0 });
         }
       } else {
-        // If no user, reset migration status
         setMigrationStatus({ success: null, count: 0 });
       }
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
-  // Firebase login methods
   const loginWithEmail = async (email, password) => {
-    // Ensure auth is initialized before use
     if (!auth) throw new Error("Firebase Auth is not initialized. Check lib/firebase.js");
     await signInWithEmailAndPassword(auth, email, password);
   };
@@ -70,7 +58,6 @@ export function AuthProvider({ children }) {
   const googleLogin = async () => {
     if (!auth || !googleProvider) throw new Error("Firebase Auth or Google Provider not initialized. Check lib/firebase.js");
     await signInWithPopup(auth, googleProvider);
-    // The onAuthStateChanged listener will automatically update currentUser and trigger redirect
   };
 
   const logout = async () => {
@@ -81,7 +68,7 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
-        currentUser, // Expose the user state
+        currentUser, // EXPOSE the correctly named 'currentUser' state
         loginWithEmail,
         signupWithEmail,
         googleLogin,
@@ -90,7 +77,6 @@ export function AuthProvider({ children }) {
         migrationStatus
       }}
     >
-      {/* Only render children when authentication state is known */}
       {!loading && children}
     </AuthContext.Provider>
   );

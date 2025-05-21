@@ -1,3 +1,4 @@
+// lib/projects.js
 import { db, auth } from './firebase';
 import {
   collection,
@@ -15,10 +16,10 @@ const PROJECTS_COLLECTION = 'projects';
 
 // Helper to safely convert Firestore Timestamp to ISO string
 const convertFirestoreTimestamp = (timestamp) => {
-  if (timestamp?.toDate) {
+  if (timestamp && typeof timestamp.toDate === 'function') {
     return timestamp.toDate().toISOString();
   }
-  return new Date().toISOString();
+  return null; // Return null if timestamp is not valid or not a Firestore Timestamp
 };
 
 // Get all projects for the current user
@@ -43,10 +44,13 @@ export const getProjects = async () => {
         completed: data.status === 'completed',
         projectURL: data.projectURL || '',
         revenue: data.revenue || 0,
-        dueDate: data.dueDate || undefined,
+        // Convert Firestore Timestamp for dueDate and projectStartedAt
+        dueDate: convertFirestoreTimestamp(data.dueDate),
+        projectStartedAt: convertFirestoreTimestamp(data.projectStartedAt), // Ensure conversion from Firestore Timestamp
+        assignedEmployees: data.assignedEmployees || [], // Ensure this is retrieved as an array
         userId: data.userId || '',
         createdAt: convertFirestoreTimestamp(data.createdAt),
-        updatedAt: data.updatedAt ? convertFirestoreTimestamp(data.updatedAt) : undefined
+        updatedAt: data.updatedAt ? convertFirestoreTimestamp(data.updatedAt) : null
       };
     });
   } catch (error) {
@@ -63,14 +67,17 @@ export const createProject = async (projectData) => {
     const newProjectRef = doc(collection(db, PROJECTS_COLLECTION));
     const newProject = {
       ...projectData,
-      id: newProjectRef.id,
       userId: auth.currentUser.uid,
       completed: projectData.status === 'completed',
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
+      // Ensure date fields are converted to Date objects for Firestore if they are strings
+      projectStartedAt: projectData.projectStartedAt ? new Date(projectData.projectStartedAt) : null,
+      dueDate: projectData.dueDate ? new Date(projectData.dueDate) : null,
+      // assignedEmployees is already an array from projectData, no special handling needed here
     };
 
     await setDoc(newProjectRef, newProject);
-    return newProject;
+    return { id: newProjectRef.id, ...newProject, createdAt: new Date().toISOString() }; // Return with ID and a client-side timestamp for immediate use
   } catch (error) {
     console.error('Error creating project:', error);
     throw new Error('Failed to create project. Please try again.');
@@ -83,11 +90,22 @@ export const updateProject = async (id, updates) => {
     if (!auth.currentUser) throw new Error('User not authenticated');
 
     const projectRef = doc(db, PROJECTS_COLLECTION, id);
-    await updateDoc(projectRef, {
-      ...updates,
-      updatedAt: serverTimestamp(),
-      completed: updates.status ? updates.status === 'completed' : undefined
-    });
+    const updatePayload = { ...updates, updatedAt: serverTimestamp() };
+
+    // Ensure date fields are converted to Date objects or removed if empty for Firestore
+    if (updatePayload.projectStartedAt === '') {
+        updatePayload.projectStartedAt = null; // Set to null for empty date
+    } else if (typeof updatePayload.projectStartedAt === 'string') {
+        updatePayload.projectStartedAt = new Date(updatePayload.projectStartedAt);
+    }
+
+    if (updatePayload.dueDate === '') {
+        updatePayload.dueDate = null; // Set to null for empty date
+    } else if (typeof updatePayload.dueDate === 'string') {
+        updatePayload.dueDate = new Date(updatePayload.dueDate);
+    }
+
+    await updateDoc(projectRef, updatePayload);
   } catch (error) {
     console.error('Error updating project:', error);
     throw new Error('Failed to update project. Please try again.');
