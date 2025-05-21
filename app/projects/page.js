@@ -245,7 +245,6 @@ export default function ProjectsPage() {
     const [editFormData, setEditFormData] = useState({});
     const [isSaving, setIsSaving] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [employeeMap, setEmployeeMap] = useState({});
 
     const loadProjects = async () => {
         try {

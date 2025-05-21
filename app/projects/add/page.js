@@ -25,7 +25,6 @@ export default function AddProjectPage() {
     const [errorEmployees, setErrorEmployees] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
-    const [showLoginModal, setShowLoginModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState('success');
