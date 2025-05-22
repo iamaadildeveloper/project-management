@@ -17,7 +17,7 @@ import Navbar from './components/Navbar'; // Adjust the path if needed
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children }) {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const pathname = usePathname();
 
     // Determine if the current page is an authentication page
@@ -40,7 +40,7 @@ export default function RootLayout({ children }) {
                                         md:relative z-40
                                     `}
                                 >
-                                    {/* Sidebar Header with Toggle */}
+                                    {/* Sidebar Header with Toggle - THIS IS THE ONE WE KEEP */}
                                     <div className="p-4 border-b flex items-center justify-between">
                                         <button
                                             className="p-1 rounded hover:bg-gray-100"
@@ -66,14 +66,6 @@ export default function RootLayout({ children }) {
                                                 Dashboard
                                             </SidebarItem>
                                             <SidebarItem
-                                                icon={<UsersIcon className="w-5 h-5" />}
-                                                href="/employees"
-                                                isActive={pathname === '/employees'}
-                                                sidebarOpen={sidebarOpen}
-                                            >
-                                                Employees
-                                            </SidebarItem>
-                                            <SidebarItem
                                                 icon={<ClipboardDocumentIcon className="w-5 h-5" />}
                                                 href="/projects"
                                                 isActive={pathname === '/projects'}
@@ -81,7 +73,15 @@ export default function RootLayout({ children }) {
                                             >
                                                 Projects
                                             </SidebarItem>
-
+                                            <SidebarItem
+                                                icon={<UsersIcon className="w-5 h-5" />}
+                                                href="/employees"
+                                                isActive={pathname === '/employees'}
+                                                sidebarOpen={sidebarOpen}
+                                            >
+                                                Employees
+                                            </SidebarItem>
+                                            
                                         </ul>
                                     </nav>
                                 </aside>
@@ -92,8 +92,8 @@ export default function RootLayout({ children }) {
                                     ${sidebarOpen ? 'md:ml-64' : 'md:ml-20'}
                                     transition-all duration-200
                                 `}>
-                                    {/* Mobile Toggle Button (always visible) */}
-                                    <button
+                                    {/* Mobile Toggle Button (always visible) - REMOVED FROM HERE */}
+                                    {/* <button
                                         className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-gray-200"
                                         onClick={() => setSidebarOpen(!sidebarOpen)}
                                     >
@@ -102,7 +102,7 @@ export default function RootLayout({ children }) {
                                         ) : (
                                             <Bars3Icon className="h-6 w-6" />
                                         )}
-                                    </button>
+                                    </button> */}
 
                                     <div className="p-6">{children}</div>
                                 </main>

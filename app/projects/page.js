@@ -34,7 +34,9 @@ function ProjectCard({
     onCancelEdit,
     editFormData,
     onEditInputChange,
-    employeeName
+    employeeName,
+    // New props for employee selection in edit mode
+    allEmployees // Pass the full list of employees
 }) {
     return (
         <div className={`relative bg-white rounded-xl shadow-md p-6 border-t-4 ${
@@ -217,6 +219,33 @@ function ProjectCard({
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                     </div>
+                    {/* New: Employee Assignment in Edit Mode */}
+                    <div>
+                        <label htmlFor="edit-assignedEmployees" className="block text-sm font-medium text-gray-700 mb-1">
+                            Assigned Employees
+                        </label>
+                        {allEmployees && allEmployees.length > 0 ? (
+                            <select
+                                id="edit-assignedEmployees"
+                                name="assignedEmployees"
+                                multiple
+                                value={editFormData.assignedEmployees || []}
+                                onChange={(e) => {
+                                    const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+                                    onEditInputChange({ target: { name: 'assignedEmployees', value: selectedOptions } });
+                                }}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                                {allEmployees.map(employee => (
+                                    <option key={employee.id} value={employee.id}>
+                                        {employee.name}
+                                    </option>
+                                ))}
+                            </select>
+                        ) : (
+                            <p className="text-gray-500 text-sm">No employees available to assign.</p>
+                        )}
+                    </div>
                 </div>
             )}
 
@@ -245,6 +274,8 @@ export default function ProjectsPage() {
     const [editFormData, setEditFormData] = useState({});
     const [isSaving, setIsSaving] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [employeeMap, setEmployeeMap] = useState({});
+    const [allEmployees, setAllEmployees] = useState([]); // New state to hold all employees
 
     const loadProjects = async () => {
         try {
@@ -261,6 +292,7 @@ export default function ProjectsPage() {
                 return acc;
             }, {});
             setEmployeeMap(empMap);
+            setAllEmployees(loadedEmployees); // Set the allEmployees state
             console.log('3. Employee Map (ID to Name):', empMap);
 
             const projectsWithEmployeeNames = loadedProjects.map(project => {
@@ -272,7 +304,7 @@ export default function ProjectsPage() {
                     const assignedNames = project.assignedEmployees
                         .map(empId => {
                             const name = empMap[empId];
-                            console.log(`  - Employee ID: ${empId}, Mapped Name: ${name}`);
+                            console.log(`   - Employee ID: ${empId}, Mapped Name: ${name}`);
                             return name;
                         })
                         .filter(name => name);
@@ -288,7 +320,7 @@ export default function ProjectsPage() {
                 console.log(`Project ID: ${project.id}, projectStartedAt:`, project.projectStartedAt, 'Type:', typeof project.projectStartedAt);
                 if (project.projectStartedAt && typeof project.projectStartedAt === 'string') {
                     const date = new Date(project.projectStartedAt);
-                    console.log(`  - Parsed projectStartedAt Date:`, date, 'Valid:', !isNaN(date.getTime()));
+                    console.log(`   - Parsed projectStartedAt Date:`, date, 'Valid:', !isNaN(date.getTime()));
                 }
 
                 return {
@@ -369,7 +401,8 @@ export default function ProjectsPage() {
                 dueDate: projectToEdit.dueDate,
                 description: projectToEdit.description,
                 projectStartedAt: projectToEdit.projectStartedAt,
-                completed: projectToEdit.completed
+                completed: projectToEdit.completed,
+                assignedEmployees: projectToEdit.assignedEmployees || [], // Initialize assignedEmployees
             });
         }
     };
@@ -392,12 +425,11 @@ export default function ProjectsPage() {
             }
 
             updateData.completed = formData.completed;
+            updateData.assignedEmployees = formData.assignedEmployees; // Ensure assignedEmployees is saved
 
             await updateProject(id, updateData);
-            const updatedProjects = projects.map(p =>
-                p.id === id ? { ...p, ...formData } : p
-            );
-            setProjects(updatedProjects);
+            // Reload projects to ensure employee names are correctly updated if assignments changed
+            await loadProjects();
             setEditingId(null);
             window.dispatchEvent(new Event('project-updated'));
         } catch (err) {
@@ -425,7 +457,8 @@ export default function ProjectsPage() {
         project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         project.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (project.description && project.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (project.employeeName && project.employeeName.toLowerCase().includes(searchTerm.toLowerCase()))
+        // Use employeeMap here for filtering by employee name
+        (project.assignedEmployees && project.assignedEmployees.some(empId => employeeMap[empId] && employeeMap[empId].toLowerCase().includes(searchTerm.toLowerCase())))
     );
 
     const activeProjects = filteredProjects.filter(p => !p.completed);
@@ -446,10 +479,13 @@ export default function ProjectsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8 font-inter">
-            <div className="max-w-7xl mx-auto">
+        // Changed padding to px-0 on mobile, and px-4 on larger screens for less space
+        <div className="min-h-screen bg-gray-100 px-0 py-4 md:px-4 md:py-8 font-inter">
+            {/* The content inside this div will now stretch more */}
+            <div>
                 {/* Header Section */}
-                <div className="flex items-center mb-8">
+                {/* Reduced horizontal padding to px-2 on mobile for header elements */}
+                <div className="flex items-center mb-8 px-2">
                     <button
                         onClick={() => router.back()}
                         className="p-2 rounded-full text-gray-600 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -461,8 +497,9 @@ export default function ProjectsPage() {
                 </div>
 
                 {/* Error Banner */}
+                {/* Reduced horizontal padding to px-2 on mobile for error banner */}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg flex justify-between items-center shadow-sm">
+                    <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg flex justify-between items-center shadow-sm mx-2">
                         <span>{error}</span>
                         <button
                             onClick={() => setError(null)}
@@ -475,9 +512,11 @@ export default function ProjectsPage() {
                 )}
 
                 {/* Main Content Area */}
-                <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 mb-8">
+                {/* This div now has no horizontal padding from the layout,
+                    its internal elements will control their own spacing. */}
+                <div className="bg-white rounded-xl shadow-lg mb-8 mx-2 md:mx-0"> {/* Added mx-2 for mobile, mx-0 for desktop */}
                     {/* Search Bar */}
-                    <div className="relative mb-6">
+                    <div className="p-6 relative mb-6"> {/* p-6 provides internal padding */}
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
                         </div>
@@ -491,11 +530,17 @@ export default function ProjectsPage() {
                     </div>
 
                     {/* Active Projects Section */}
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800">Active Projects</h2>
+                    <div className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6"> {/* Changed to flex-col on mobile, flex-row on sm+ */}
+                        <h2 className="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">
+                            Active Projects{' '}
+                            {/* Using employeeMap here to display total number of employees */}
+                            <span className="text-gray-500 text-base font-normal">
+                                ({Object.keys(employeeMap).length} Employees Registered)
+                            </span>
+                        </h2>
                         <Link
                             href="/projects/add"
-                            className="inline-flex items-center px-5 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200 shadow-md"
+                            className="inline-flex items-center px-4 py-2 sm:px-5 sm:py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200 shadow-md w-full sm:w-auto text-sm sm:text-base" // Adjusted px/py for mobile, added text-sm/text-base
                         >
                             <PlusIcon className="h-5 w-5 mr-2" />
                             Add New Project
@@ -503,7 +548,7 @@ export default function ProjectsPage() {
                     </div>
 
                     {activeProjects.length > 0 ? (
-                        <div className="grid gap-6 md:grid-cols-2"> {/* Changed grid layout here */}
+                        <div className="grid gap-6 md:grid-cols-2 p-6 pt-0"> {/* p-6 provides internal padding, pt-0 removes top */}
                             {activeProjects.map(project => (
                                 <ProjectCard
                                     key={project.id}
@@ -518,11 +563,12 @@ export default function ProjectsPage() {
                                     editFormData={editFormData}
                                     onEditInputChange={handleEditInputChange}
                                     employeeName={project.employeeName}
+                                    allEmployees={allEmployees} // Pass allEmployees to ProjectCard
                                 />
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-10 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                        <div className="text-center py-10 bg-gray-50 rounded-lg border border-dashed border-gray-300 mx-6 mb-6"> {/* mx-6 mb-6 for internal spacing */}
                             <p className="text-gray-500 text-lg">No active projects found. Start by adding a new one!</p>
                         </div>
                     )}
@@ -530,7 +576,7 @@ export default function ProjectsPage() {
 
                 {/* Completed Projects Section */}
                 {completedProjects.length > 0 && (
-                    <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
+                    <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 mx-2 md:mx-0"> {/* Added mx-2 for mobile, mx-0 for desktop */}
                         <h2 className="text-2xl font-bold text-gray-800 mb-6">Completed Projects</h2>
                         <div className="grid gap-6 md:grid-cols-2"> {/* Changed grid layout here */}
                             {completedProjects.map(project => (
@@ -546,6 +592,7 @@ export default function ProjectsPage() {
                                     editFormData={editFormData}
                                     onEditInputChange={handleEditInputChange}
                                     employeeName={project.employeeName}
+                                    allEmployees={allEmployees} // Pass allEmployees to ProjectCard
                                 />
                             ))}
                         </div>
