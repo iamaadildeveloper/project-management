@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { FirebaseError } from 'firebase/app'; // Import FirebaseError for type checking
-
+import Image from 'next/image';
 export default function SignupPage() {
     const { googleLogin, signupWithEmail } = useAuth();
     const [email, setEmail] = useState('');
@@ -148,7 +148,7 @@ export default function SignupPage() {
                     disabled={isLoading}
                     className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold text-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
-                    <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google logo" className="h-6 w-6 mr-3" />
+                    <Image src="https://www.svgrepo.com/show/355037/google.svg" alt="Google logo" className="h-6 w-6 mr-3" />
                     Continue with Google
                 </button>
 

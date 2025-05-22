@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react'; // Import useState
+ // Import useState
 import { useAuth } from '../context/AuthContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { UserCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'; // Import toggle icons (Bars3Icon and XMarkIcon removed as they are no longer needed)
+ // Import toggle icons (Bars3Icon and XMarkIcon removed as they are no longer needed)
 
 // Accept sidebarOpen and setSidebarOpen as props from RootLayout (though Navbar will manage its own mobile menu)
-export default function Navbar({ sidebarOpen, setSidebarOpen }) { // Keep these props as they might be used by RootLayout for the main sidebar toggle
+export default function Navbar({  }) { // Keep these props as they might be used by RootLayout for the main sidebar toggle
   const { currentUser, loading, logout } = useAuth();
   const router = useRouter();
   // const [isNavMenuOpen, setIsNavMenuOpen] = useState(false); // State for Navbar's mobile menu - no longer needed
