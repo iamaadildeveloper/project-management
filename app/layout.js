@@ -66,14 +66,6 @@ export default function RootLayout({ children }) {
                                                 Dashboard
                                             </SidebarItem>
                                             <SidebarItem
-                                                icon={<ClipboardDocumentIcon className="w-5 h-5" />}
-                                                href="/projects"
-                                                isActive={pathname === '/projects'}
-                                                sidebarOpen={sidebarOpen}
-                                            >
-                                                Projects
-                                            </SidebarItem>
-                                            <SidebarItem
                                                 icon={<UsersIcon className="w-5 h-5" />}
                                                 href="/employees"
                                                 isActive={pathname === '/employees'}
@@ -81,6 +73,15 @@ export default function RootLayout({ children }) {
                                             >
                                                 Employees
                                             </SidebarItem>
+                                            <SidebarItem
+                                                icon={<ClipboardDocumentIcon className="w-5 h-5" />}
+                                                href="/projects"
+                                                isActive={pathname === '/projects'}
+                                                sidebarOpen={sidebarOpen}
+                                            >
+                                                Projects
+                                            </SidebarItem>
+                                            
                                             
                                         </ul>
                                     </nav>

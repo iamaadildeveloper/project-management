@@ -221,6 +221,7 @@ function ProjectCard({
                     </div>
                     {/* New: Employee Assignment in Edit Mode */}
                     <div>
+                        
                         <label htmlFor="edit-assignedEmployees" className="block text-sm font-medium text-gray-700 mb-1">
                             Assigned Employees
                         </label>
@@ -493,7 +494,10 @@ export default function ProjectsPage() {
                     >
                         <ArrowLeftIcon className="h-6 w-6" />
                     </button>
-                    <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 ml-4">Project Dashboard</h1>
+                    <div>
+                    <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 ml-4">Projects</h1>
+                    <p>Note : Please Add Employee First Before Adding Project</p>
+                    </div>
                 </div>
 
                 {/* Error Banner */}
